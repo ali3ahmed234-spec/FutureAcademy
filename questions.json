@@ -322,6 +322,216 @@
       },
       "correctAnswer": "A",
       "sourceType": "ai-extracted"
+    },
+    {
+      "id": 30,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Which of the following keywords is used to define a variable in JavaScript?",
+      "options": {
+        "A": "var",
+        "B": "let",
+        "C": "both a and b",
+        "D": "none of the mentioned"
+      },
+      "correctAnswer": "C",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 31,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "What is the correct syntax for adding a background color?",
+      "options": {
+        "A": "<background>yellow</background>",
+        "B": "<body style=\"background-color: yellow\">",
+        "C": "<body bg=\"yellow\">",
+        "D": "None of the mentioned"
+      },
+      "correctAnswer": "B",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 32,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Choose the correct HTML element to define emphasized text:",
+      "options": {
+        "A": "<italic>",
+        "B": "<em>",
+        "C": "<i>",
+        "D": "<emphasized>"
+      },
+      "correctAnswer": "B",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 33,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Which doctype is correct for HTML5?",
+      "options": {
+        "A": "<!DOCTYPE HTML5>",
+        "B": "<! DOCTYPE HTML PUBLIC \"-//W3C\">",
+        "C": "<! DOCTYPE \"http://www.w3.org\">",
+        "D": "<!DOCTYPE html>"
+      },
+      "correctAnswer": "D",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 34,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Choose the correct HTML element for the largest heading:",
+      "options": {
+        "A": "<heading>",
+        "B": "<h1>",
+        "C": "<head>",
+        "D": "<h6>"
+      },
+      "correctAnswer": "B",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 35,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "How can you open a link in a new tab/browser window?",
+      "options": {
+        "A": "<a href=\"url\" target=\"new\">",
+        "B": "<a href=\"url\" new>",
+        "C": "<a href=\"url\" target=\"_blank\">",
+        "D": "<a href=\"url\" target=\"_self\">"
+      },
+      "correctAnswer": "C",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 36,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Choose the correct HTML element to define important text:",
+      "options": {
+        "A": "<b>",
+        "B": "<important>",
+        "C": "<i>",
+        "D": "<strong>"
+      },
+      "correctAnswer": "D",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 37,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "What is the correct HTML element for inserting a line break?",
+      "options": {
+        "A": "<br>",
+        "B": "<b>",
+        "C": "<\\n>",
+        "D": "<break>"
+      },
+      "correctAnswer": "A",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 38,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Which of these elements are all <table> elements?",
+      "options": {
+        "A": "<thead><body><tr>",
+        "B": "<thead><tr><td>",
+        "C": "<thead><tr><tt>",
+        "D": "<table><head><tfoot>"
+      },
+      "correctAnswer": "B",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 39,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "............. Is a HTML tag to create a bulled list.",
+      "options": {
+        "A": "<dl>",
+        "B": "<ol>",
+        "C": "<list>",
+        "D": "<ul>"
+      },
+      "correctAnswer": "D",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 40,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "............. Is a HTML tag to create a number list.",
+      "options": {
+        "A": "<dl>",
+        "B": "<ol>",
+        "C": "<list>",
+        "D": "<ul>"
+      },
+      "correctAnswer": "B",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 41,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "What is the correct HTML element for inserting video files?",
+      "options": {
+        "A": "<video>",
+        "B": "<movie>",
+        "C": "<medio>",
+        "D": "<broadcast>"
+      },
+      "correctAnswer": "A",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 42,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "In HTML, which attribute is used to specify that an input field must be filled out?",
+      "options": {
+        "A": "validate",
+        "B": "required",
+        "C": "placeholder",
+        "D": "formvalidate"
+      },
+      "correctAnswer": "B",
+      "sourceType": "ai-extracted"
+    },
+    {
+      "id": 43,
+      "major": "علوم الحاسب",
+      "year": "السنة الثالثة",
+      "subject": "برمجة الويب",
+      "question": "Which input type defines a slider control?",
+      "options": {
+        "A": "Controls",
+        "B": "slider",
+        "C": "range",
+        "D": "search"
+      },
+      "correctAnswer": "C",
+      "sourceType": "ai-extracted"
     }
   ]
 }
