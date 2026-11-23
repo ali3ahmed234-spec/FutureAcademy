@@ -16,6 +16,7 @@
     <p>ارفع صورة امتحان أو ملف PDF لاستخراج الأسئلة وتصنيفها تلقائياً.</p>
 
     <form id="uploadForm">
+      <input type="password" id="adminPassword" placeholder="أدخل كلمة مرور الأدمن" required style="margin-bottom: 10px;" />
       <input type="file" id="examFile" accept="image/*,.pdf" required />
       <button type="submit" id="submitBtn">تحليل الملف وإضافة الأسئلة</button>
     </form>
@@ -26,6 +27,7 @@
 
   <script>
     const uploadForm = document.getElementById("uploadForm");
+    const adminPasswordInput = document.getElementById("adminPassword");
     const examFileInput = document.getElementById("examFile");
     const submitBtn = document.getElementById("submitBtn");
     const statusMessage = document.getElementById("statusMessage");
@@ -34,9 +36,11 @@
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const file = examFileInput.files[0];
-      if (!file) return;
+      const password = adminPasswordInput.value;
+      if (!file || !password) return;
 
       const formData = new FormData();
+      formData.append("password", password);
       formData.append("examFile", file);
 
       submitBtn.disabled = true;
@@ -56,7 +60,7 @@
           throw new Error(result.error || "فشل رفع الملف");
         }
 
-        statusMessage.innerHTML = `<p style="color: green; font-weight: bold;">${result.message}</p>`;
+        statusMessage.innerHTML = `<p style="color: #4ade80; font-weight: bold;">${result.message}</p>`;
 
         extractedPreview.innerHTML = result.questions.map(q => `
           <div class="question-card">
@@ -65,14 +69,21 @@
           </div>
         `).join("");
 
-        uploadForm.reset();
+        // تفريغ خانة الملف فقط مع الإبقاء على الباسورد لو حبيت ترفع ملف تاني وراه
+        examFileInput.value = "";
       } catch (err) {
-        statusMessage.innerHTML = `<p style="color: red; font-weight: bold;">خطأ: ${err.message}</p>`;
+        statusMessage.innerHTML = `<p style="color: #f87171; font-weight: bold;">خطأ: ${err.message}</p>`;
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "تحليل الملف وإضافة الأسئلة";
       }
     });
+
+    // فحص تلقائي لو السيرفر مش شغال عشان ميجيلكش Failed to fetch فجأة
+    fetch("http://localhost:3000/")
+      .catch(() => {
+        statusMessage.innerHTML = `<p style="color: #fbbf24; font-weight: bold;">⚠️ تنبيه: السيرفر المحلي غير مشغّل حالياً. شغّل أمر node server.js في VS Code.</p>`;
+      });
   </script>
 </body>
 </html>

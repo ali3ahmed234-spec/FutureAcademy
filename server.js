@@ -78,6 +78,11 @@ app.get("/api/questions", (req, res) => {
 
 app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
   try {
+    const adminPass = req.body.password;
+    if (!adminPass || adminPass !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "كلمة مرور الأدمن غير صحيحة! غير مصرح لك بالرفع." });
+    }
+
     if (!req.file) {
       return res.status(400).json({ error: "يرجى رفع صورة امتحان أو ملف PDF" });
     }
