@@ -11,7 +11,7 @@
   <nav>
     <button onclick="openTab('student-tab')">تسجيل الطالب</button>
     <button onclick="openTab('bank-tab')">بنك الأسئلة</button>
-    <button onclick="openTab('admin-tab')">صفحة الأدمن (AI)</button>
+    <button onclick="window.location.href='admin.html'">صفحة الأدمن (AI)</button>
   </nav>
 
   <!-- 1. قسم تسجيل الطالب -->
@@ -21,16 +21,17 @@
     <input type="text" id="st-name" placeholder="اسم الطالب">
     
     <select id="st-year">
-      <option value="1">سنة أولى</option>
-      <option value="2">سنة تانية</option>
-      <option value="3">سنة تالتة</option>
-      <option value="4">سنة رابعة</option>
+      <option value="السنة الأولى">السنة الأولى</option>
+      <option value="السنة الثانية">السنة الثانية</option>
+      <option value="السنة الثالثة">السنة الثالثة</option>
+      <option value="السنة الرابعة">السنة الرابعة</option>
     </select>
 
     <select id="st-major">
-      <option value="CS">علوم حاسب (CS)</option>
-      <option value="IS">نظم معلومات (IS)</option>
-      <option value="IT">تكنولوجيا معلومات (IT)</option>
+      <option value="علوم الحاسب">علوم الحاسب (CS)</option>
+      <option value="نظم المعلومات">نظم المعلومات (IS)</option>
+      <option value="تكنولوجيا المعلومات">تكنولوجيا المعلومات (IT)</option>
+      <option value="الذكاء الاصطناعي">الذكاء الاصطناعي (AI)</option>
     </select>
 
     <button onclick="registerStudent()">دخول</button>
@@ -41,14 +42,6 @@
     <h2>بنك الأسئلة</h2>
     <p id="welcome-msg"></p>
     <div id="questions-container"></div>
-  </div>
-
-  <!-- 3. قسم الأدمن والذكاء الاصطناعي -->
-  <div id="admin-tab" class="box" style="display:none;">
-    <h2>لوحة الأدمن - استخراج الأسئلة</h2>
-    <input type="file" id="image-input" accept="image/*">
-    <button onclick="extractTextFromImage()">تحويل الصورة لنص بالـ AI</button>
-    <p id="ai-result"></p>
   </div>
 
   <script src="app.js"></script>
