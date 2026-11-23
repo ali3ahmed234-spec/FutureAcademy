@@ -1,0 +1,28 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "major": "علوم الحاسب",
+      "year": "السنة الثانية",
+      "subject": "هياكل البيانات",
+      "question": "اشرح الفرق بين Stack و Queue مع ذكر مثال عملي لكل منهما.",
+      "sourceType": "manual"
+    },
+    {
+      "id": 2,
+      "major": "نظم المعلومات",
+      "year": "السنة الثانية",
+      "subject": "قواعد البيانات",
+      "question": "ما الفرق بين Primary Key و Foreign Key في الجداول العلائقية؟",
+      "sourceType": "manual"
+    },
+    {
+      "id": 3,
+      "major": "الذكاء الاصطناعي",
+      "year": "السنة الثالثة",
+      "subject": "تعلم الآلة",
+      "question": "متى يحدث Overfitting وكيف يمكن تقليله في تدريب النماذج؟",
+      "sourceType": "manual"
+    }
+  ]
+}
