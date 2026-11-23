@@ -1,1 +1,1 @@
-# Future Academy
+# Future Academy tty
