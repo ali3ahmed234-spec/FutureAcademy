@@ -18,7 +18,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 // تهيئة Gemini API (يقرأ GEMINI_API_KEY تلقائياً من ملف .env)
 const ai = new GoogleGenAI();
 
-// تأكد أن اسم الملف مطابق لاسم ملفك (questions.json أو action.json)
+// ⚠️ مهم: لو اسم ملفك action.json غير كلمة questions.json هنا إلى action.json
 const DATA_FILE = path.join(__dirname, "questions.json");
 
 function loadQuestions() {
