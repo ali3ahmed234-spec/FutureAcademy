@@ -1,1 +1,1 @@
-# FutureAcademy
+# Future Academy
