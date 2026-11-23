@@ -2,32 +2,26 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FutureAcademy - لوحة تحكم الأدمن</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="student-banner">
-        <div><strong>لوحة تحكم الأدمن (Admin Panel)</strong></div>
-        <a href="questions.html" class="btn btn-secondary">عرض بنك الأسئلة</a>
-      </div>
 
-      <h1>رفع امتحان وتحليله بالذكاء الاصطناعي</h1>
-      <p class="subtitle">ارفع صورة امتحان أو ملف PDF، وسيقوم AI باستخراج الأسئلة وتصنيفها تلقائياً.</p>
+  <nav>
+    <button onclick="window.location.href='index.html'">الرجوع لبنك الأسئلة</button>
+  </nav>
 
-      <form id="uploadForm">
-        <div class="form-group">
-          <label for="examFile">اختر ملف الامتحان (صورة PNG/JPG أو ملف PDF)</label>
-          <input type="file" id="examFile" accept="image/*,.pdf" required />
-        </div>
-        <button type="submit" class="btn" id="submitBtn">تحليل الملف وإضافة الأسئلة</button>
-      </form>
+  <div class="box">
+    <h2>لوحة تحكم الأدمن (AI)</h2>
+    <p>ارفع صورة امتحان أو ملف PDF لاستخراج الأسئلة وتصنيفها تلقائياً.</p>
 
-      <div id="statusMessage" style="margin-top: 20px;"></div>
-      <div id="extractedPreview" style="margin-top: 20px;"></div>
-    </div>
+    <form id="uploadForm">
+      <input type="file" id="examFile" accept="image/*,.pdf" required />
+      <button type="submit" id="submitBtn">تحليل الملف وإضافة الأسئلة</button>
+    </form>
+
+    <div id="statusMessage" style="margin-top: 15px;"></div>
+    <div id="extractedPreview"></div>
   </div>
 
   <script>
@@ -42,17 +36,15 @@
       const file = examFileInput.files[0];
       if (!file) return;
 
-      // تجهيز الملف للإرسال عبر FormData
       const formData = new FormData();
       formData.append("examFile", file);
 
       submitBtn.disabled = true;
       submitBtn.textContent = "جاري التحليل بالذكاء الاصطناعي...";
-      statusMessage.innerHTML = `<p class="subtitle">يرجى الانتظار، يقوم الذكاء الاصطناعي بقراءة وتصنيف الأسئلة...</p>`;
+      statusMessage.innerHTML = "<p>يرجى الانتظار، جاري قراءة الأسئلة...</p>";
       extractedPreview.innerHTML = "";
 
       try {
-        // إرسال الملف إلى السيرفر المحلي (Node.js)
         const response = await fetch("http://localhost:3000/api/upload-exam", {
           method: "POST",
           body: formData
@@ -64,19 +56,18 @@
           throw new Error(result.error || "فشل رفع الملف");
         }
 
-        statusMessage.innerHTML = `<p style="color: #4ade80; font-weight: bold;">✅ ${result.message}</p>`;
+        statusMessage.innerHTML = `<p style="color: green; font-weight: bold;">${result.message}</p>`;
 
-        // عرض الأسئلة اللي تم استخراجها فوراً
         extractedPreview.innerHTML = result.questions.map(q => `
-          <div class="question-item">
-            <div class="question-meta">${q.major} | ${q.year} | مادة: ${q.subject}</div>
-            <div>${q.question}</div>
+          <div class="question-card">
+            <strong>${q.major} | ${q.year} | مادة: ${q.subject}</strong>
+            <p>${q.question}</p>
           </div>
         `).join("");
 
         uploadForm.reset();
       } catch (err) {
-        statusMessage.innerHTML = `<p style="color: #f87171; font-weight: bold;">❌ ${err.message}</p>`;
+        statusMessage.innerHTML = `<p style="color: red; font-weight: bold;">خطأ: ${err.message}</p>`;
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "تحليل الملف وإضافة الأسئلة";
