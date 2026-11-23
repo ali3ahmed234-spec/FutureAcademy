@@ -12,13 +12,10 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// إعداد استقبال الملفات (صور أو PDF) في الذاكرة المؤقتة
 const upload = multer({ storage: multer.memoryStorage() });
-
-// تهيئة Gemini API (يقرأ GEMINI_API_KEY تلقائياً من ملف .env)
 const ai = new GoogleGenAI();
 
-// ⚠️ مهم: لو اسم ملفك action.json غير كلمة questions.json هنا إلى action.json
+// تأكد إن الاسم مطابق لملفك (questions.json أو action.json)
 const DATA_FILE = path.join(__dirname, "questions.json");
 
 function loadQuestions() {
@@ -33,11 +30,43 @@ function saveQuestions(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
+// دالة ذكية بتجرب أكتر من موديل لو واحد منهم عليه ضغط 503
+async function generateWithFallback(contents, config) {
+  const modelsToTry = [
+    "gemini-3.5-flash-lite",
+    "gemini-2.5-flash-lite",
+    "gemini-3.5-flash",
+    "gemini-3.8-flash"
+  ];
+
+  let lastError;
+  for (const modelName of modelsToTry) {
+    try {
+      console.log(`Trying model: ${modelName}...`);
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents,
+        config,
+      });
+      console.log(`Success with model: ${modelName}`);
+      return response;
+    } catch (err) {
+      console.warn(`Model ${modelName} failed (${err.status || err.message})`);
+      lastError = err;
+      // لو الخطأ 503 (ضغط سيرفر) أو 429، يكمل ويجرب الموديل اللي بعده
+      if (err.status === 503 || err.status === 429 || err.status === 404) {
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError;
+}
+
 app.get("/", (req, res) => {
   res.json({ status: "FutureAcademy AI Backend is running!" });
 });
 
-// 1. جلب كل الأسئلة للواجهة الأمامية (Frontend)
 app.get("/api/questions", (req, res) => {
   try {
     const data = loadQuestions();
@@ -47,7 +76,6 @@ app.get("/api/questions", (req, res) => {
   }
 });
 
-// 2. استقبال صورة امتحان أو PDF واستخراج الأسئلة وتصنيفها بالذكاء الاصطناعي
 app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
   try {
     if (!req.file) {
@@ -64,39 +92,39 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
       - question: نص السؤال كاملاً وواضحاً.
     `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: [
-        {
-          inlineData: {
-            data: req.file.buffer.toString("base64"),
-            mimeType: req.file.mimetype,
-          },
-        },
-        prompt,
-      ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              major: { type: Type.STRING },
-              year: { type: Type.STRING },
-              subject: { type: Type.STRING },
-              question: { type: Type.STRING },
-            },
-            required: ["major", "year", "subject", "question"],
-          },
+    const contents = [
+      {
+        inlineData: {
+          data: req.file.buffer.toString("base64"),
+          mimeType: req.file.mimetype,
         },
       },
-    });
+      prompt,
+    ];
+
+    const config = {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            major: { type: Type.STRING },
+            year: { type: Type.STRING },
+            subject: { type: Type.STRING },
+            question: { type: Type.STRING },
+          },
+          required: ["major", "year", "subject", "question"],
+        },
+      },
+    };
+
+    const response = await generateWithFallback(contents, config);
 
     const extractedQuestions = JSON.parse(response.text);
     const currentData = loadQuestions();
-    let nextId = currentData.questions.length > 0 
-      ? Math.max(...currentData.questions.map((q) => q.id)) + 1 
+    let nextId = currentData.questions.length > 0
+      ? Math.max(...currentData.questions.map((q) => q.id)) + 1
       : 1;
 
     const addedQuestions = extractedQuestions.map((item) => ({
@@ -118,7 +146,9 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
     });
   } catch (error) {
     console.error("AI Extraction Error:", error);
-    res.status(500).json({ error: "حدث خطأ أثناء تحليل الملف بالذكاء الاصطناعي" });
+    res.status(500).json({
+      error: `فشل التحليل (${error.status || "Error"}): ${error.message || "حاول مرة أخرى"}`
+    });
   }
 });
 
