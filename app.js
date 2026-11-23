@@ -27,9 +27,9 @@ async function goToSelectionStep() {
   document.getElementById('student-greeting').innerText = `مرحباً يا ${name} (ID: ${id})`;
   openTab('selection-tab');
 
-  // تحميل الأسئلة من السيرفر في الخلفية عشان نكون جاهزين بالمواد المرفوعة
+  // تحميل الأسئلة من ملف questions.json مباشرة (يعمل على GitHub Pages والمحلي)
   try {
-    let response = await fetch('http://localhost:3000/api/questions');
+    let response = await fetch('questions.json?t=' + new Date().getTime());
     let data = await response.json();
     allQuestionsCache = data.questions || [];
   } catch (error) {
@@ -61,13 +61,13 @@ async function onMajorChange() {
   subjectSelect.style.display = "block";
   subjectSelect.innerHTML = `<option value="" disabled selected>جاري تحميل المواد...</option>`;
 
-  // تحديث البيانات من السيرفر للتأكد من ظهور أحدث مواد اترفعت
+  // قراءة أحدث نسخة من ملف questions.json مباشرة
   try {
-    let response = await fetch('http://localhost:3000/api/questions');
+    let response = await fetch('questions.json?t=' + new Date().getTime());
     let data = await response.json();
     allQuestionsCache = data.questions || [];
   } catch (error) {
-    subjectSelect.innerHTML = `<option value="" disabled selected>تعذر الاتصال بالسيرفر</option>`;
+    subjectSelect.innerHTML = `<option value="" disabled selected>تعذر تحميل ملف الأسئلة</option>`;
     return;
   }
 
