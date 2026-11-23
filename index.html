@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>بنك الأسئلة الذكي</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- أزرار التنقل البسيطة -->
+  <nav>
+    <button onclick="openTab('student-tab')">تسجيل الطالب</button>
+    <button onclick="openTab('bank-tab')">بنك الأسئلة</button>
+    <button onclick="openTab('admin-tab')">صفحة الأدمن (AI)</button>
+  </nav>
+
+  <!-- 1. قسم تسجيل الطالب -->
+  <div id="student-tab" class="box">
+    <h2>تسجيل بيانات الطالب</h2>
+    <input type="text" id="st-id" placeholder="الرقم الجامعي (ID)">
+    <input type="text" id="st-name" placeholder="اسم الطالب">
+    
+    <select id="st-year">
+      <option value="1">سنة أولى</option>
+      <option value="2">سنة تانية</option>
+      <option value="3">سنة تالتة</option>
+      <option value="4">سنة رابعة</option>
+    </select>
+
+    <select id="st-major">
+      <option value="CS">علوم حاسب (CS)</option>
+      <option value="IS">نظم معلومات (IS)</option>
+      <option value="IT">تكنولوجيا معلومات (IT)</option>
+    </select>
+
+    <button onclick="registerStudent()">دخول</button>
+  </div>
+
+  <!-- 2. قسم بنك الأسئلة -->
+  <div id="bank-tab" class="box" style="display:none;">
+    <h2>بنك الأسئلة</h2>
+    <p id="welcome-msg"></p>
+    <div id="questions-container"></div>
+  </div>
+
+  <!-- 3. قسم الأدمن والذكاء الاصطناعي -->
+  <div id="admin-tab" class="box" style="display:none;">
+    <h2>لوحة الأدمن - استخراج الأسئلة</h2>
+    <input type="file" id="image-input" accept="image/*">
+    <button onclick="extractTextFromImage()">تحويل الصورة لنص بالـ AI</button>
+    <p id="ai-result"></p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
