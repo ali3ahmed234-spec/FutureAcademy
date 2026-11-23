@@ -4,6 +4,36 @@
   <meta charset="UTF-8">
   <title>بنك الأسئلة الذكي - FutureAcademy</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* تنسيق الفورم العمودي زي الرسمة التوضيحية */
+    .step-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+    .step-form input,
+    .step-form select,
+    .step-form button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      box-sizing: border-box;
+    }
+    .step-form button {
+      background-color: #0284c7;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .step-form button:hover {
+      background-color: #0369a1;
+    }
+  </style>
 </head>
 <body>
 
@@ -14,32 +44,58 @@
     <button onclick="window.location.href='admin.html'">صفحة الأدمن (AI)</button>
   </nav>
 
-  <!-- 1. قسم تسجيل بيانات الطالب -->
+  <!-- 1. الصفحة الأولى: الاسم والـ ID فقط -->
   <div id="student-tab" class="box">
     <h2>تسجيل بيانات الطالب</h2>
-    <input type="text" id="st-id" placeholder="الرقم الجامعي (ID)">
-    <input type="text" id="st-name" placeholder="اسم الطالب">
-    
-    <select id="st-year">
-      <option value="السنة الأولى">السنة الأولى</option>
-      <option value="السنة الثانية">السنة الثانية</option>
-      <option value="السنة الثالثة">السنة الثالثة</option>
-      <option value="السنة الرابعة">السنة الرابعة</option>
-    </select>
-
-    <select id="st-major">
-      <option value="علوم الحاسب">علوم الحاسب</option>
-      <option value="نظم المعلومات">نظم المعلومات</option>
-      <option value="هندسة البرمجيات">هندسة البرمجيات</option>
-      <option value="الذكاء الاصطناعي">الذكاء الاصطناعي</option>
-    </select>
-
-    <button onclick="registerStudent()">دخول وعرض الأسئلة</button>
+    <div class="step-form">
+      <input type="text" id="st-name" placeholder="اسم الطالب (Name)" required>
+      <input type="text" id="st-id" placeholder="الرقم الجامعي (ID)" required>
+      <button type="button" onclick="goToSelectionStep()">التالي</button>
+    </div>
   </div>
 
-  <!-- 2. قسم عرض الأسئلة -->
+  <!-- 2. الصفحة الثانية: اختيار السنة -> التخصص -> المادة -> دخول -->
+  <div id="selection-tab" class="box" style="display:none;">
+    <h2>اختر المسار الدراسي</h2>
+    <p id="student-greeting" style="color: #0284c7; font-weight: bold;"></p>
+
+    <div class="step-form">
+      <!-- أولاً: السنة -->
+      <select id="st-year" onchange="onYearChange()">
+        <option value="" disabled selected>-- اختر السنة الدراسية --</option>
+        <option value="السنة الأولى">السنة الأولى</option>
+        <option value="السنة الثانية">السنة الثانية</option>
+        <option value="السنة الثالثة">السنة الثالثة</option>
+        <option value="السنة الرابعة">السنة الرابعة</option>
+      </select>
+
+      <!-- ثانياً: التخصص (مخفي لحد ما يختار السنة) -->
+      <select id="st-major" onchange="onMajorChange()" style="display:none;">
+        <option value="" disabled selected>-- اختر التخصص --</option>
+        <option value="علوم الحاسب">علوم الحاسب</option>
+        <option value="نظم المعلومات">نظم المعلومات</option>
+        <option value="هندسة البرمجيات">هندسة البرمجيات</option>
+        <option value="الذكاء الاصطناعي">الذكاء الاصطناعي</option>
+      </select>
+
+      <!-- ثالثاً: المادة (مخفي لحد ما يختار التخصص، وبيتعبى تلقائياً من السيرفر) -->
+      <select id="st-subject" onchange="onSubjectChange()" style="display:none;">
+        <option value="" disabled selected>-- اختر المادة --</option>
+      </select>
+
+      <!-- رابعاً: زر الدخول (مخفي لحد ما يختار المادة) -->
+      <button type="button" id="enter-bank-btn" onclick="enterQuestionBank()" style="display:none;">
+        دخول (Enter)
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. الصفحة الثالثة: عرض الأسئلة -->
   <div id="bank-tab" class="box" style="display:none;">
-    <h2>بنك الأسئلة</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h2>بنك الأسئلة</h2>
+      <button type="button" onclick="openTab('selection-tab')" style="padding: 6px 12px; cursor: pointer;">تغيير المادة</button>
+    </div>
     <p id="welcome-msg"></p>
     <div id="questions-container"></div>
   </div>

@@ -1,121 +1,193 @@
-// 1. دالة التنقل بين الأقسام في الصفحة الرئيسية
+let allQuestionsCache = []; // تخزين الأسئلة مؤقتاً لسرعة عرض المواد والأسئلة
+
+// 1. دالة التنقل بين الصفحات الثلاث
 function openTab(tabId) {
   let studentTab = document.getElementById('student-tab');
+  let selectionTab = document.getElementById('selection-tab');
   let bankTab = document.getElementById('bank-tab');
 
-  if (studentTab && bankTab) {
-    studentTab.style.display = 'none';
-    bankTab.style.display = 'none';
-    document.getElementById(tabId).style.display = 'block';
-  }
+  if (studentTab) studentTab.style.display = 'none';
+  if (selectionTab) selectionTab.style.display = 'none';
+  if (bankTab) bankTab.style.display = 'none';
+
+  let target = document.getElementById(tabId);
+  if (target) target.style.display = 'block';
 }
 
-// 2. دالة تسجيل الطالب وعرض أسئلته
-function registerStudent() {
-  let name = document.getElementById('st-name').value;
-  let year = document.getElementById('st-year').value;
-  let major = document.getElementById('st-major').value;
+// 2. الانتقال من صفحة الاسم والـ ID إلى صفحة اختيار السنة والتخصص
+async function goToSelectionStep() {
+  let name = document.getElementById('st-name').value.trim();
+  let id = document.getElementById('st-id').value.trim();
 
-  if (name === "") {
-    alert("من فضلك اكتب اسمك");
+  if (name === "" || id === "") {
+    alert("من فضلك اكتب اسمك والرقم الجامعي (ID)");
     return;
   }
 
-  document.getElementById('welcome-msg').innerText = "أهلاً يا " + name + " (" + year + " - " + major + ")";
-  showQuestions(year, major);
-  openTab('bank-tab');
-}
+  document.getElementById('student-greeting').innerText = `مرحباً يا ${name} (ID: ${id})`;
+  openTab('selection-tab');
 
-// 3. دالة جلب الأسئلة من السيرفر وفلترتها وعرضها بشكل تفاعلي
-async function showQuestions(year, major) {
-  let container = document.getElementById('questions-container');
-  container.innerHTML = "<p>جاري تحميل الأسئلة...</p>";
-
+  // تحميل الأسئلة من السيرفر في الخلفية عشان نكون جاهزين بالمواد المرفوعة
   try {
     let response = await fetch('http://localhost:3000/api/questions');
     let data = await response.json();
-    let questions = data.questions;
-
-    container.innerHTML = "";
-    let found = false;
-
-    for (let i = 0; i < questions.length; i++) {
-      let q = questions[i];
-      if (q.year === year && q.major === major) {
-        found = true;
-
-        // التحقق هل السؤال اختيار من متعدد (MCQ) أم مقالي
-        let hasOptions = q.options && (q.options.A || q.options.B || q.options.C || q.options.D);
-        let optionsHtml = "";
-
-        if (hasOptions) {
-          let correctAns = (q.correctAnswer || "").trim().toUpperCase();
-          optionsHtml = `<div class="mcq-options" id="options-${q.id}" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; direction: ltr;">`;
-
-          ['A', 'B', 'C', 'D'].forEach(letter => {
-            if (q.options[letter]) {
-              optionsHtml += `
-                <button 
-                  type="button"
-                  class="option-btn"
-                  data-letter="${letter}"
-                  onclick="checkAnswer(${q.id}, '${letter}', '${correctAns}')"
-                  style="width: 100%; text-align: left; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; cursor: pointer; font-size: 14px; transition: 0.2s;">
-                  <strong>${letter})</strong> ${q.options[letter]}
-                </button>
-              `;
-            }
-          });
-
-          optionsHtml += `</div><div id="feedback-${q.id}" style="margin-top: 10px; font-weight: bold;"></div>`;
-        }
-
-        container.innerHTML += `
-          <div class="question-card" style="text-align: right; margin-bottom: 16px;">
-            <strong>المادة: ${q.subject}</strong>
-            <p style="margin: 10px 0; font-size: 16px; line-height: 1.6;">${q.question}</p>
-            ${optionsHtml}
-          </div>
-        `;
-      }
-    }
-
-    if (!found) {
-      container.innerHTML = "<p>لا توجد أسئلة متاحة لتخصصك حالياً.</p>";
-    }
+    allQuestionsCache = data.questions || [];
   } catch (error) {
-    container.innerHTML = "<p>تعذر الاتصال بالسيرفر. تأكد من تشغيل (node server.js).</p>";
+    console.error("تعذر تحميل الأسئلة:", error);
   }
 }
 
-// 4. دالة تصحيح الإجابة عند ضغط الطالب على أحد الاختيارات
+// 3. عند اختيار السنة -> إظهار قائمة التخصص وتصفير اللي بعدها
+function onYearChange() {
+  let majorSelect = document.getElementById('st-major');
+  let subjectSelect = document.getElementById('st-subject');
+  let enterBtn = document.getElementById('enter-bank-btn');
+
+  majorSelect.value = "";
+  majorSelect.style.display = "block";
+
+  subjectSelect.style.display = "none";
+  enterBtn.style.display = "none";
+}
+
+// 4. عند اختيار التخصص -> جلب المواد المرفوعة فعلياً لهذا التخصص وهذه السنة
+async function onMajorChange() {
+  let year = document.getElementById('st-year').value;
+  let major = document.getElementById('st-major').value;
+  let subjectSelect = document.getElementById('st-subject');
+  let enterBtn = document.getElementById('enter-bank-btn');
+
+  enterBtn.style.display = "none";
+  subjectSelect.style.display = "block";
+  subjectSelect.innerHTML = `<option value="" disabled selected>جاري تحميل المواد...</option>`;
+
+  // تحديث البيانات من السيرفر للتأكد من ظهور أحدث مواد اترفعت
+  try {
+    let response = await fetch('http://localhost:3000/api/questions');
+    let data = await response.json();
+    allQuestionsCache = data.questions || [];
+  } catch (error) {
+    subjectSelect.innerHTML = `<option value="" disabled selected>تعذر الاتصال بالسيرفر</option>`;
+    return;
+  }
+
+  // استخراج أسماء المواد بدون تكرار للسنة والتخصص المختارين
+  let availableSubjects = [];
+  allQuestionsCache.forEach(q => {
+    if (q.year === year && q.major === major && q.subject) {
+      if (!availableSubjects.includes(q.subject)) {
+        availableSubjects.push(q.subject);
+      }
+    }
+  });
+
+  if (availableSubjects.length === 0) {
+    subjectSelect.innerHTML = `<option value="" disabled selected>لا توجد مواد مرفوعة لهذا التخصص حالياً</option>`;
+  } else {
+    let optionsHtml = `<option value="" disabled selected>-- اختر المادة --</option>`;
+    availableSubjects.forEach(subj => {
+      optionsHtml += `<option value="${subj}">${subj}</option>`;
+    });
+    subjectSelect.innerHTML = optionsHtml;
+  }
+}
+
+// 5. عند اختيار المادة -> إظهار زر الدخول
+function onSubjectChange() {
+  let subject = document.getElementById('st-subject').value;
+  let enterBtn = document.getElementById('enter-bank-btn');
+
+  if (subject) {
+    enterBtn.style.display = "block";
+  }
+}
+
+// 6. عند الضغط على دخول -> فتح بنك الأسئلة وعرض أسئلة المادة المختارة فقط
+function enterQuestionBank() {
+  let name = document.getElementById('st-name').value.trim();
+  let year = document.getElementById('st-year').value;
+  let major = document.getElementById('st-major').value;
+  let subject = document.getElementById('st-subject').value;
+
+  document.getElementById('welcome-msg').innerText = `أهلاً يا ${name} | ${year} - ${major} | مادة: ${subject}`;
+  showQuestions(year, major, subject);
+  openTab('bank-tab');
+}
+
+// 7. عرض الأسئلة المفلترة حسب السنة والتخصص والمادة (بالنظام التفاعلي)
+function showQuestions(year, major, subject) {
+  let container = document.getElementById('questions-container');
+  container.innerHTML = "";
+  let found = false;
+
+  for (let i = 0; i < allQuestionsCache.length; i++) {
+    let q = allQuestionsCache[i];
+    if (q.year === year && q.major === major && q.subject === subject) {
+      found = true;
+
+      let hasOptions = q.options && (q.options.A || q.options.B || q.options.C || q.options.D);
+      let optionsHtml = "";
+
+      if (hasOptions) {
+        let correctAns = (q.correctAnswer || "").trim().toUpperCase();
+        optionsHtml = `<div class="mcq-options" id="options-${q.id}" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; direction: ltr;">`;
+
+        ['A', 'B', 'C', 'D'].forEach(letter => {
+          if (q.options[letter]) {
+            optionsHtml += `
+              <button 
+                type="button"
+                class="option-btn"
+                data-letter="${letter}"
+                onclick="checkAnswer(${q.id}, '${letter}', '${correctAns}')"
+                style="width: 100%; text-align: left; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; cursor: pointer; font-size: 14px; transition: 0.2s;">
+                <strong>${letter})</strong> ${q.options[letter]}
+              </button>
+            `;
+          }
+        });
+
+        optionsHtml += `</div><div id="feedback-${q.id}" style="margin-top: 10px; font-weight: bold;"></div>`;
+      }
+
+      container.innerHTML += `
+        <div class="question-card" style="text-align: right; margin-bottom: 16px;">
+          <strong>المادة: ${q.subject}</strong>
+          <p style="margin: 10px 0; font-size: 16px; line-height: 1.6;">${q.question}</p>
+          ${optionsHtml}
+        </div>
+      `;
+    }
+  }
+
+  if (!found) {
+    container.innerHTML = "<p>لا توجد أسئلة متاحة لهذه المادة حالياً.</p>";
+  }
+}
+
+// 8. تصحيح الإجابة عند ضغط الطالب على أحد الاختيارات
 function checkAnswer(questionId, selectedLetter, correctLetter) {
   let optionsDiv = document.getElementById(`options-${questionId}`);
   let feedbackDiv = document.getElementById(`feedback-${questionId}`);
   let buttons = optionsDiv.querySelectorAll('.option-btn');
 
-  // تعطيل جميع أزرار هذا السؤال بعد الاختيار حتى لا يغير الطالب إجابته
   buttons.forEach(btn => {
     btn.disabled = true;
     btn.style.cursor = "default";
     let letter = btn.getAttribute('data-letter');
 
-    // تلوين الإجابة الصحيحة بالأخضر دائماً
     if (letter === correctLetter) {
       btn.style.backgroundColor = "#dcfce7";
       btn.style.borderColor = "#16a34a";
       btn.style.color = "#14532d";
       btn.style.fontWeight = "bold";
-    }
-    // إذا اختار الطالب إجابة خاطئة، نلون اختياره بالأحمر
-    else if (letter === selectedLetter && selectedLetter !== correctLetter) {
+    } else if (letter === selectedLetter && selectedLetter !== correctLetter) {
       btn.style.backgroundColor = "#fee2e2";
       btn.style.borderColor = "#dc2626";
       btn.style.color = "#7f1d1d";
     }
   });
 
-  // إظهار رسالة النتيجة أسفل الاختيارات
   if (!correctLetter) {
     feedbackDiv.innerHTML = `<span style="color: #0284c7;">تم تسجيل اختيارك (${selectedLetter}).</span>`;
   } else if (selectedLetter === correctLetter) {
