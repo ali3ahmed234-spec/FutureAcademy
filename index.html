@@ -2,19 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>بنك الأسئلة الذكي</title>
+  <title>بنك الأسئلة الذكي - FutureAcademy</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- أزرار التنقل البسيطة -->
+  <!-- شريط التنقل -->
   <nav>
     <button onclick="openTab('student-tab')">تسجيل الطالب</button>
     <button onclick="openTab('bank-tab')">بنك الأسئلة</button>
     <button onclick="window.location.href='admin.html'">صفحة الأدمن (AI)</button>
   </nav>
 
-  <!-- 1. قسم تسجيل الطالب -->
+  <!-- 1. قسم تسجيل بيانات الطالب -->
   <div id="student-tab" class="box">
     <h2>تسجيل بيانات الطالب</h2>
     <input type="text" id="st-id" placeholder="الرقم الجامعي (ID)">
@@ -28,16 +28,16 @@
     </select>
 
     <select id="st-major">
-      <option value="علوم الحاسب">علوم الحاسب (CS)</option>
-      <option value="نظم المعلومات">نظم المعلومات (IS)</option>
-      <option value="تكنولوجيا المعلومات">تكنولوجيا المعلومات (IT)</option>
-      <option value="الذكاء الاصطناعي">الذكاء الاصطناعي (AI)</option>
+      <option value="علوم الحاسب">علوم الحاسب</option>
+      <option value="نظم المعلومات">نظم المعلومات</option>
+      <option value="هندسة البرمجيات">هندسة البرمجيات</option>
+      <option value="الذكاء الاصطناعي">الذكاء الاصطناعي</option>
     </select>
 
-    <button onclick="registerStudent()">دخول</button>
+    <button onclick="registerStudent()">دخول وعرض الأسئلة</button>
   </div>
 
-  <!-- 2. قسم بنك الأسئلة -->
+  <!-- 2. قسم عرض الأسئلة -->
   <div id="bank-tab" class="box" style="display:none;">
     <h2>بنك الأسئلة</h2>
     <p id="welcome-msg"></p>

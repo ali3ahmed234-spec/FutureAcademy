@@ -1,8 +1,13 @@
 // 1. دالة التنقل بين الأقسام في الصفحة الرئيسية
 function openTab(tabId) {
-  document.getElementById('student-tab').style.display = 'none';
-  document.getElementById('bank-tab').style.display = 'none';
-  document.getElementById(tabId).style.display = 'block';
+  let studentTab = document.getElementById('student-tab');
+  let bankTab = document.getElementById('bank-tab');
+
+  if (studentTab && bankTab) {
+    studentTab.style.display = 'none';
+    bankTab.style.display = 'none';
+    document.getElementById(tabId).style.display = 'block';
+  }
 }
 
 // 2. دالة تسجيل الطالب وعرض أسئلته
@@ -21,14 +26,13 @@ function registerStudent() {
   openTab('bank-tab');
 }
 
-// 3. دالة جلب الأسئلة من ملف questions.json وفلترتها
+// 3. دالة جلب الأسئلة من السيرفر وفلترتها
 async function showQuestions(year, major) {
   let container = document.getElementById('questions-container');
   container.innerHTML = "<p>جاري تحميل الأسئلة...</p>";
 
   try {
-    // قراءة البيانات من ملف مروان
-    let response = await fetch('questions.json');
+    let response = await fetch('http://localhost:3000/api/questions');
     let data = await response.json();
     let questions = data.questions;
 
@@ -49,24 +53,45 @@ async function showQuestions(year, major) {
       container.innerHTML = "<p>لا توجد أسئلة متاحة لتخصصك حالياً.</p>";
     }
   } catch (error) {
-    container.innerHTML = "<p>حدث خطأ في قراءة ملف الأسئلة. تأكد من تشغيل السيرفر أو Live Server.</p>";
+    container.innerHTML = "<p>تعذر الاتصال بالسيرفر. تأكد من تشغيل (node server.js).</p>";
   }
 }
 
-// 4. دالة الأدمن لاستخراج النص من الصورة (AI)
-function extractTextFromImage() {
+// 4. دالة الأدمن لإرسال الصورة أو الـ PDF للسيرفر واستخراج الأسئلة بالـ AI
+async function extractTextFromImage() {
   let fileInput = document.getElementById('image-input');
   let resultBox = document.getElementById('ai-result');
 
   if (fileInput.files.length === 0) {
-    alert("اختر صورة أولاً");
+    alert("اختر صورة أو ملف PDF أولاً");
     return;
   }
 
   resultBox.style.display = "block";
-  resultBox.innerText = "جاري تحليل الصورة بالـ AI...";
+  resultBox.innerText = "جاري تحليل الملف بالذكاء الاصطناعي...";
 
-  setTimeout(function() {
-    resultBox.innerText = "تم استخراج السؤال بنجاح! جاهز للربط بسيرفر مروان لحفظه في questions.json.";
-  }, 1000);
+  let formData = new FormData();
+  formData.append("examFile", fileInput.files[0]);
+
+  try {
+    let response = await fetch("http://localhost:3000/api/upload-exam", {
+      method: "POST",
+      body: formData
+    });
+
+    let data = await response.json();
+
+    if (response.ok) {
+      let html = `<strong>${data.message}</strong><hr>`;
+      for (let i = 0; i < data.questions.length; i++) {
+        let q = data.questions[i];
+        html += `<p><b>[${q.major} - ${q.year} - ${q.subject}]:</b> ${q.question}</p>`;
+      }
+      resultBox.innerHTML = html;
+    } else {
+      resultBox.innerText = "خطأ: " + (data.error || "حدثت مشكلة أثناء التحليل");
+    }
+  } catch (error) {
+    resultBox.innerText = "تعذر الاتصال بالسيرفر. تأكد من تشغيل (node server.js).";
+  }
 }
