@@ -26,7 +26,7 @@ function registerStudent() {
   openTab('bank-tab');
 }
 
-// 3. دالة جلب الأسئلة من السيرفر وفلترتها
+// 3. دالة جلب الأسئلة من السيرفر وفلترتها وعرضها بشكل تفاعلي
 async function showQuestions(year, major) {
   let container = document.getElementById('questions-container');
   container.innerHTML = "<p>جاري تحميل الأسئلة...</p>";
@@ -37,19 +37,50 @@ async function showQuestions(year, major) {
     let questions = data.questions;
 
     container.innerHTML = "";
+    let found = false;
 
     for (let i = 0; i < questions.length; i++) {
-      if (questions[i].year === year && questions[i].major === major) {
+      let q = questions[i];
+      if (q.year === year && q.major === major) {
+        found = true;
+
+        // التحقق هل السؤال اختيار من متعدد (MCQ) أم مقالي
+        let hasOptions = q.options && (q.options.A || q.options.B || q.options.C || q.options.D);
+        let optionsHtml = "";
+
+        if (hasOptions) {
+          let correctAns = (q.correctAnswer || "").trim().toUpperCase();
+          optionsHtml = `<div class="mcq-options" id="options-${q.id}" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; direction: ltr;">`;
+
+          ['A', 'B', 'C', 'D'].forEach(letter => {
+            if (q.options[letter]) {
+              optionsHtml += `
+                <button 
+                  type="button"
+                  class="option-btn"
+                  data-letter="${letter}"
+                  onclick="checkAnswer(${q.id}, '${letter}', '${correctAns}')"
+                  style="width: 100%; text-align: left; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; cursor: pointer; font-size: 14px; transition: 0.2s;">
+                  <strong>${letter})</strong> ${q.options[letter]}
+                </button>
+              `;
+            }
+          });
+
+          optionsHtml += `</div><div id="feedback-${q.id}" style="margin-top: 10px; font-weight: bold;"></div>`;
+        }
+
         container.innerHTML += `
-          <div class="question-card">
-            <strong>المادة: ${questions[i].subject}</strong>
-            <p>${questions[i].question}</p>
+          <div class="question-card" style="text-align: right; margin-bottom: 16px;">
+            <strong>المادة: ${q.subject}</strong>
+            <p style="margin: 10px 0; font-size: 16px; line-height: 1.6;">${q.question}</p>
+            ${optionsHtml}
           </div>
         `;
       }
     }
 
-    if (container.innerHTML === "") {
+    if (!found) {
       container.innerHTML = "<p>لا توجد أسئلة متاحة لتخصصك حالياً.</p>";
     }
   } catch (error) {
@@ -57,41 +88,39 @@ async function showQuestions(year, major) {
   }
 }
 
-// 4. دالة الأدمن لإرسال الصورة أو الـ PDF للسيرفر واستخراج الأسئلة بالـ AI
-async function extractTextFromImage() {
-  let fileInput = document.getElementById('image-input');
-  let resultBox = document.getElementById('ai-result');
+// 4. دالة تصحيح الإجابة عند ضغط الطالب على أحد الاختيارات
+function checkAnswer(questionId, selectedLetter, correctLetter) {
+  let optionsDiv = document.getElementById(`options-${questionId}`);
+  let feedbackDiv = document.getElementById(`feedback-${questionId}`);
+  let buttons = optionsDiv.querySelectorAll('.option-btn');
 
-  if (fileInput.files.length === 0) {
-    alert("اختر صورة أو ملف PDF أولاً");
-    return;
-  }
+  // تعطيل جميع أزرار هذا السؤال بعد الاختيار حتى لا يغير الطالب إجابته
+  buttons.forEach(btn => {
+    btn.disabled = true;
+    btn.style.cursor = "default";
+    let letter = btn.getAttribute('data-letter');
 
-  resultBox.style.display = "block";
-  resultBox.innerText = "جاري تحليل الملف بالذكاء الاصطناعي...";
-
-  let formData = new FormData();
-  formData.append("examFile", fileInput.files[0]);
-
-  try {
-    let response = await fetch("http://localhost:3000/api/upload-exam", {
-      method: "POST",
-      body: formData
-    });
-
-    let data = await response.json();
-
-    if (response.ok) {
-      let html = `<strong>${data.message}</strong><hr>`;
-      for (let i = 0; i < data.questions.length; i++) {
-        let q = data.questions[i];
-        html += `<p><b>[${q.major} - ${q.year} - ${q.subject}]:</b> ${q.question}</p>`;
-      }
-      resultBox.innerHTML = html;
-    } else {
-      resultBox.innerText = "خطأ: " + (data.error || "حدثت مشكلة أثناء التحليل");
+    // تلوين الإجابة الصحيحة بالأخضر دائماً
+    if (letter === correctLetter) {
+      btn.style.backgroundColor = "#dcfce7";
+      btn.style.borderColor = "#16a34a";
+      btn.style.color = "#14532d";
+      btn.style.fontWeight = "bold";
     }
-  } catch (error) {
-    resultBox.innerText = "تعذر الاتصال بالسيرفر. تأكد من تشغيل (node server.js).";
+    // إذا اختار الطالب إجابة خاطئة، نلون اختياره بالأحمر
+    else if (letter === selectedLetter && selectedLetter !== correctLetter) {
+      btn.style.backgroundColor = "#fee2e2";
+      btn.style.borderColor = "#dc2626";
+      btn.style.color = "#7f1d1d";
+    }
+  });
+
+  // إظهار رسالة النتيجة أسفل الاختيارات
+  if (!correctLetter) {
+    feedbackDiv.innerHTML = `<span style="color: #0284c7;">تم تسجيل اختيارك (${selectedLetter}).</span>`;
+  } else if (selectedLetter === correctLetter) {
+    feedbackDiv.innerHTML = `<span style="color: #16a34a;">✅ إجابة صحيحة! أحسنت.</span>`;
+  } else {
+    feedbackDiv.innerHTML = `<span style="color: #dc2626;">❌ إجابة خاطئة! الإجابة الصحيحة هي (${correctLetter}).</span>`;
   }
 }

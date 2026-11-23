@@ -15,7 +15,6 @@ app.use(express.json());
 const upload = multer({ storage: multer.memoryStorage() });
 const ai = new GoogleGenAI();
 
-// تأكد إن الاسم مطابق لملفك (questions.json أو action.json)
 const DATA_FILE = path.join(__dirname, "questions.json");
 
 function loadQuestions() {
@@ -53,7 +52,6 @@ async function generateWithFallback(contents, config) {
     } catch (err) {
       console.warn(`Model ${modelName} failed (${err.status || err.message})`);
       lastError = err;
-      // لو الخطأ 503 (ضغط سيرفر) أو 429، يكمل ويجرب الموديل اللي بعده
       if (err.status === 503 || err.status === 429 || err.status === 404) {
         continue;
       }
@@ -89,12 +87,14 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
 
     const prompt = `
       أنت مساعد أكاديمي ذكي لمنصة FutureAcademy.
-      قم باستخراج جميع الأسئلة الموجودة في هذا الملف (صورة امتحان أو PDF) بدقة.
-      لكل سؤال، حدد:
+      قم باستخراج جميع الأسئلة الموجودة في هذا الملف بدقة.
+      لكل سؤال، استخرج:
       - major: التخصص الأنسب من القائمة فقط ("علوم الحاسب" أو "نظم المعلومات" أو "هندسة البرمجيات" أو "الذكاء الاصطناعي").
       - year: السنة الدراسية الأنسب من القائمة فقط ("السنة الأولى" أو "السنة الثانية" أو "السنة الثالثة" أو "السنة الرابعة").
       - subject: اسم المادة الدراسية (مثل: هياكل البيانات، قواعد البيانات، تعلم الآلة، برمجة الويب...).
-      - question: نص السؤال كاملاً وواضحاً.
+      - question: نص السؤال فقط (بدون كتابة الاختيارات a, b, c, d بداخله، وبدون رقم السؤال).
+      - options: كائن يحتوي على الاختيارات الأربعة (A, B, C, D) إن وجدت (بدون كتابة الحرف a) أو b) داخل نص الاختيار نفسه). إذا كان السؤال مقالياً، اجعلها نصوصاً فارغة "".
+      - correctAnswer: حرف الإجابة الصحيحة فقط ("A" أو "B" أو "C" أو "D") بناءً على معرفتك الأكاديمية أو العلامات الموجودة في الورقة. إذا كان السؤال مقالياً اجعله "".
     `;
 
     const contents = [
@@ -118,8 +118,19 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
             year: { type: Type.STRING },
             subject: { type: Type.STRING },
             question: { type: Type.STRING },
+            options: {
+              type: Type.OBJECT,
+              properties: {
+                A: { type: Type.STRING },
+                B: { type: Type.STRING },
+                C: { type: Type.STRING },
+                D: { type: Type.STRING },
+              },
+              required: ["A", "B", "C", "D"],
+            },
+            correctAnswer: { type: Type.STRING },
           },
-          required: ["major", "year", "subject", "question"],
+          required: ["major", "year", "subject", "question", "options", "correctAnswer"],
         },
       },
     };
@@ -138,6 +149,8 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
       year: item.year,
       subject: item.subject,
       question: item.question,
+      options: item.options,
+      correctAnswer: item.correctAnswer,
       sourceType: "ai-extracted",
     }));
 
