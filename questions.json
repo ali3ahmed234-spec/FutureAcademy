@@ -5,111 +5,14 @@
       "major": "علوم الحاسب",
       "year": "السنة الثانية",
       "subject": "هياكل البيانات",
-      "question": "اشرح الفرق بين Stack و Queue مع ذكر مثال عملي لكل منهما.",
-      "sourceType": "manual"
-    },
-    {
-      "id": 2,
-      "major": "نظم المعلومات",
-      "year": "السنة الثانية",
-      "subject": "قواعد البيانات",
-      "question": "ما الفرق بين Primary Key و Foreign Key في الجداول العلائقية؟",
-      "sourceType": "manual"
-    },
-    {
-      "id": 3,
-      "major": "الذكاء الاصطناعي",
-      "year": "السنة الثالثة",
-      "subject": "تعلم الآلة",
-      "question": "متى يحدث Overfitting وكيف يمكن تقليله في تدريب النماذج؟",
-      "sourceType": "manual"
-    },
-    {
-      "id": 4,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "1) Which of is true for the following instruction? String *x, y; a) x is a pointer to a string, y is a string b) y is a pointer to a string, x is a string c) both x and y are pointers to string type d) y is a pointer to a string",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 5,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "2) ............ is a linear data structure that is open at both ends and the operations are performed in First In First Out (FIFO) order. a) Stack b) Linked List c) Queue d) Graph",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 6,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "3) All the following data structures are linear data structure, except ....... a) Queue b) Linked List c) Stack d) Graph",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 7,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "4) What is the output of the following code: int arr[3] = {30, 40, 45}; int *p = arr; cout << *(p + 1); a) 3 b) 30 c) 40 d) 45",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 8,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "5) A linked list in which none of the nodes contains a NULL pointer is? a) Singly Linked List b) Doubly Linked List c) Circular Linked List d) Hashed List",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 9,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "6) ............ is a particular way of storing and organizing the data in a computer memory. a) Datatype b) Data sturucre c) Data Base d) Data Mining",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 10,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "7) What is the output of the following code: int a = 5; int *p = &a; *p = 20; cout << a; a) 5 b) 20 c) 15 d) 25",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 11,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "8) Using stack data structure, ........... operation is used to return the last inserted element without removing it. a) Top b) Push c) Pop d) isempty",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 12,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "9) Which of the following correctly declares a pointer to an integer? a) int p; b) int *p; c) int &p; d) pointer p;",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 13,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "10) ............ is a type of data Structure in which operations are performed using Last-In-First-Out order a) Queue b) Linked List c) Stack d) Graph",
-      "sourceType": "ai-extracted"
-    },
-    {
-      "id": 14,
-      "major": "علوم الحاسب",
-      "year": "السنة الثانية",
-      "subject": "هياكل البيانات",
-      "question": "11) ............ is a type of data Structure based on indexes in access and storing data a) Queue b) Linked List c) Stack d) Array",
+      "question": "Which type of data structure uses indexes for accessing and storing data?",
+      "options": {
+        "A": "Queue",
+        "B": "Linked List",
+        "C": "Stack",
+        "D": "Array"
+      },
+      "correctAnswer": "D",
       "sourceType": "ai-extracted"
     },
     {
@@ -117,7 +20,14 @@
       "major": "علوم الحاسب",
       "year": "السنة الثانية",
       "subject": "هياكل البيانات",
-      "question": "12) ............ is the process of combining the data structures with their operations a) Abstract Data Type b) Linked List c) Stack d) Data Type",
+      "question": "Which term describes combining a data structure with its operations?",
+      "options": {
+        "A": "Abstract Data Type",
+        "B": "Linked List",
+        "C": "Stack",
+        "D": "Data Type"
+      },
+      "correctAnswer": "A",
       "sourceType": "ai-extracted"
     },
     {
@@ -125,7 +35,14 @@
       "major": "علوم الحاسب",
       "year": "السنة الثانية",
       "subject": "هياكل البيانات",
-      "question": "13) ............ is a simple queue in which the input can be taken from both ends but deletion can be done from only one end. a) Input restricted queue b) output restricted queue c) Circular queue d) Priorty queue",
+      "question": "Which queue allows input from both ends but deletion from only one end?",
+      "options": {
+        "A": "Input-restricted queue",
+        "B": "Output-restricted queue",
+        "C": "Circular queue",
+        "D": "Priority queue"
+      },
+      "correctAnswer": "A",
       "sourceType": "ai-extracted"
     },
     {
