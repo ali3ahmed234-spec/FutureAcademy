@@ -85,13 +85,17 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
       return res.status(400).json({ error: "يرجى رفع صورة امتحان أو ملف PDF" });
     }
 
+    // استقبال السنة والتخصص المختارين من صفحة الأدمن
+    const selectedYear = req.body.year;
+    const selectedMajor = req.body.major;
+
     const prompt = `
       أنت مساعد أكاديمي ذكي لمنصة FutureAcademy.
       قم باستخراج جميع الأسئلة الموجودة في هذا الملف بدقة.
       لكل سؤال، استخرج:
-      - major: التخصص الأنسب من القائمة فقط ("علوم الحاسب" أو "نظم المعلومات" أو "هندسة البرمجيات" أو "الذكاء الاصطناعي").
-      - year: السنة الدراسية الأنسب من القائمة فقط ("السنة الأولى" أو "السنة الثانية" أو "السنة الثالثة" أو "السنة الرابعة").
-      - subject: اسم المادة الدراسية (مثل: هياكل البيانات، قواعد البيانات، تعلم الآلة، برمجة الويب...).
+      - major: اجعلها "${selectedMajor || "علوم الحاسب"}" (التخصصات المتاحة فقط: "علوم الحاسب" أو "نظم المعلومات" أو "إدارة" أو "إدارة إنجليزي").
+      - year: اجعلها "${selectedYear || "السنة الأولى"}" (السنوات المتاحة فقط: "السنة الأولى" أو "السنة الثانية" أو "السنة الثالثة" أو "السنة الرابعة").
+      - subject: اسم المادة الدراسية (مثل: هياكل البيانات، قواعد البيانات، مبادئ الإدارة، المحاسبة...).
       - question: نص السؤال فقط (بدون كتابة الاختيارات a, b, c, d بداخله، وبدون رقم السؤال).
       - options: كائن يحتوي على الاختيارات الأربعة (A, B, C, D) إن وجدت (بدون كتابة الحرف a) أو b) داخل نص الاختيار نفسه). إذا كان السؤال مقالياً، اجعلها نصوصاً فارغة "".
       - correctAnswer: حرف الإجابة الصحيحة فقط ("A" أو "B" أو "C" أو "D") بناءً على معرفتك الأكاديمية أو العلامات الموجودة في الورقة. إذا كان السؤال مقالياً اجعله "".
@@ -145,8 +149,8 @@ app.post("/api/upload-exam", upload.single("examFile"), async (req, res) => {
 
     const addedQuestions = extractedQuestions.map((item) => ({
       id: nextId++,
-      major: item.major,
-      year: item.year,
+      major: selectedMajor || item.major,
+      year: selectedYear || item.year,
       subject: item.subject,
       question: item.question,
       options: item.options,
