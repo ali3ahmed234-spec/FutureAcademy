@@ -75,13 +75,13 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #0369a1;
+  background-color: #0ea5e9;
 }
 
 .question-card {
   background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-right: 4px solid #22c55e;
+  border: 1px solid #c7c9c9;
+  border-right: 4px solid #0ea5e9;
   padding: 1rem;
   margin-top: 1rem;
   border-radius: 6px;
@@ -89,6 +89,6 @@ button[type="submit"]:hover {
 
 .question-card strong {
   display: block;
-  color: #166534;
+  color: #4e5350;
   margin-bottom: 0.5rem;
 }

@@ -149,9 +149,9 @@ function checkAnswer(questionId, selectedLetter, correctLetter) {
     let letter = btn.getAttribute('data-letter');
 
     if (letter === correctLetter) {
-      btn.style.backgroundColor = "#dcfce7";
-      btn.style.borderColor = "#16a34a";
-      btn.style.color = "#14532d";
+      btn.style.backgroundColor = "#676a68";
+      btn.style.borderColor = "#3c3d3d";
+      btn.style.color = "#888d89";
       btn.style.fontWeight = "bold";
     } else if (letter === selectedLetter && selectedLetter !== correctLetter) {
       btn.style.backgroundColor = "#fee2e2";
