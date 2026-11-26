@@ -4,6 +4,25 @@
   <meta charset="UTF-8" />
   <title>FutureAcademy - لوحة تحكم الأدمن</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    #uploadForm {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      margin: 15px auto;
+    }
+    #uploadForm input,
+    #uploadForm select,
+    #uploadForm button {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,7 +35,24 @@
     <p>ارفع صورة امتحان أو ملف PDF لاستخراج الأسئلة وتصنيفها تلقائياً.</p>
 
     <form id="uploadForm">
-      <input type="password" id="adminPassword" placeholder="أدخل كلمة مرور الأدمن" required style="margin-bottom: 10px;" />
+      <input type="password" id="adminPassword" placeholder="أدخل كلمة مرور الأدمن" required />
+
+      <select id="examYear" required>
+        <option value="" disabled selected>-- اختر السنة الدراسية --</option>
+        <option value="السنة الأولى">السنة الأولى</option>
+        <option value="السنة الثانية">السنة الثانية</option>
+        <option value="السنة الثالثة">السنة الثالثة</option>
+        <option value="السنة الرابعة">السنة الرابعة</option>
+      </select>
+
+      <select id="examMajor" required>
+        <option value="" disabled selected>-- اختر التخصص --</option>
+        <option value="علوم الحاسب">علوم الحاسب</option>
+        <option value="نظم المعلومات">نظم المعلومات</option>
+        <option value="إدارة">إدارة</option>
+        <option value="إدارة إنجليزي">إدارة إنجليزي</option>
+      </select>
+
       <input type="file" id="examFile" accept="image/*,.pdf" required />
       <button type="submit" id="submitBtn">تحليل الملف وإضافة الأسئلة</button>
     </form>
@@ -28,6 +64,8 @@
   <script>
     const uploadForm = document.getElementById("uploadForm");
     const adminPasswordInput = document.getElementById("adminPassword");
+    const examYearSelect = document.getElementById("examYear");
+    const examMajorSelect = document.getElementById("examMajor");
     const examFileInput = document.getElementById("examFile");
     const submitBtn = document.getElementById("submitBtn");
     const statusMessage = document.getElementById("statusMessage");
@@ -37,10 +75,14 @@
       e.preventDefault();
       const file = examFileInput.files[0];
       const password = adminPasswordInput.value;
-      if (!file || !password) return;
+      const year = examYearSelect.value;
+      const major = examMajorSelect.value;
+      if (!file || !password || !year || !major) return;
 
       const formData = new FormData();
       formData.append("password", password);
+      formData.append("year", year);
+      formData.append("major", major);
       formData.append("examFile", file);
 
       submitBtn.disabled = true;
@@ -69,7 +111,7 @@
           </div>
         `).join("");
 
-        // تفريغ خانة الملف فقط مع الإبقاء على الباسورد لو حبيت ترفع ملف تاني وراه
+        // تفريغ خانة الملف فقط مع الإبقاء على الباسورد والاختيارات لو حبيت ترفع ملف تاني وراه
         examFileInput.value = "";
       } catch (err) {
         statusMessage.innerHTML = `<p style="color: #f87171; font-weight: bold;">خطأ: ${err.message}</p>`;
