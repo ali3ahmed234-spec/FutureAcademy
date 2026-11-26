@@ -86,55 +86,65 @@ function enterQuestionBank() {
   openTab('bank-tab');
 }
 
-// 6. عرض الأسئلة المفلترة حسب السنة والتخصص والمادة
+// 6. عرض 10 أسئلة عشوائية فقط من أسئلة المادة المختارة
 function showQuestions(year, major, subject) {
   let container = document.getElementById('questions-container');
   container.innerHTML = "";
-  let found = false;
 
-  for (let i = 0; i < allQuestionsCache.length; i++) {
-    let q = allQuestionsCache[i];
-    if (q.year === year && q.major === major && q.subject === subject) {
-      found = true;
+  // 1) تصفية الأسئلة الخاصة بالسنة والتخصص والمادة
+  let filteredQuestions = allQuestionsCache.filter(
+    q => q.year === year && q.major === major && q.subject === subject
+  );
 
-      let hasOptions = q.options && (q.options.A || q.options.B || q.options.C || q.options.D);
-      let optionsHtml = "";
-
-      if (hasOptions) {
-        let correctAns = (q.correctAnswer || "").trim().toUpperCase();
-        optionsHtml = `<div class="mcq-options" id="options-${q.id}" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; direction: ltr;">`;
-
-        ['A', 'B', 'C', 'D'].forEach(letter => {
-          if (q.options[letter]) {
-            optionsHtml += `
-              <button 
-                type="button"
-                class="option-btn"
-                data-letter="${letter}"
-                onclick="checkAnswer(${q.id}, '${letter}', '${correctAns}')"
-                style="width: 100%; text-align: left; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; cursor: pointer; font-size: 14px; transition: 0.2s;">
-                <strong>${letter})</strong> ${q.options[letter]}
-              </button>
-            `;
-          }
-        });
-
-        optionsHtml += `</div><div id="feedback-${q.id}" style="margin-top: 10px; font-weight: bold;"></div>`;
-      }
-
-      container.innerHTML += `
-        <div class="question-card" style="text-align: right; margin-bottom: 16px;">
-          <strong>المادة: ${q.subject}</strong>
-          <p style="margin: 10px 0; font-size: 16px; line-height: 1.6;">${q.question}</p>
-          ${optionsHtml}
-        </div>
-      `;
-    }
-  }
-
-  if (!found) {
+  if (filteredQuestions.length === 0) {
     container.innerHTML = "<p>لا توجد أسئلة متاحة لهذه المادة حالياً.</p>";
+    return;
   }
+
+  // 2) خلط ترتيب الأسئلة عشوائياً (Fisher-Yates Shuffle)
+  for (let i = filteredQuestions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filteredQuestions[i], filteredQuestions[j]] = [filteredQuestions[j], filteredQuestions[i]];
+  }
+
+  // 3) أخذ أول 10 أسئلة فقط (أو أقل لو المادة فيها أقل من 10)
+  let selectedQuestions = filteredQuestions.slice(0, 10);
+
+  // 4) عرض الأسئلة العشرة
+  selectedQuestions.forEach((q, index) => {
+    let hasOptions = q.options && (q.options.A || q.options.B || q.options.C || q.options.D);
+    let optionsHtml = "";
+
+    if (hasOptions) {
+      let correctAns = (q.correctAnswer || "").trim().toUpperCase();
+      optionsHtml = `<div class="mcq-options" id="options-${q.id}" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; direction: ltr;">`;
+
+      ['A', 'B', 'C', 'D'].forEach(letter => {
+        if (q.options[letter]) {
+          optionsHtml += `
+            <button 
+              type="button"
+              class="option-btn"
+              data-letter="${letter}"
+              onclick="checkAnswer(${q.id}, '${letter}', '${correctAns}')"
+              style="width: 100%; text-align: left; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; cursor: pointer; font-size: 14px; transition: 0.2s;">
+              <strong>${letter})</strong> ${q.options[letter]}
+            </button>
+          `;
+        }
+      });
+
+      optionsHtml += `</div><div id="feedback-${q.id}" style="margin-top: 10px; font-weight: bold;"></div>`;
+    }
+
+    container.innerHTML += `
+      <div class="question-card" style="text-align: right; margin-bottom: 16px;">
+        <strong>سؤال ${index + 1} من ${selectedQuestions.length} | المادة: ${q.subject}</strong>
+        <p style="margin: 10px 0; font-size: 16px; line-height: 1.6;">${q.question}</p>
+        ${optionsHtml}
+      </div>
+    `;
+  });
 }
 
 // 7. تصحيح الإجابة عند ضغط الطالب على أحد الاختيارات
@@ -149,9 +159,9 @@ function checkAnswer(questionId, selectedLetter, correctLetter) {
     let letter = btn.getAttribute('data-letter');
 
     if (letter === correctLetter) {
-      btn.style.backgroundColor = "#676a68";
-      btn.style.borderColor = "#3c3d3d";
-      btn.style.color = "#888d89";
+      btn.style.backgroundColor = "#dcfce7";
+      btn.style.borderColor = "#16a34a";
+      btn.style.color = "#14532d";
       btn.style.fontWeight = "bold";
     } else if (letter === selectedLetter && selectedLetter !== correctLetter) {
       btn.style.backgroundColor = "#fee2e2";
