@@ -5,7 +5,6 @@
   <title>بنك الأسئلة الذكي - FutureAcademy</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* تنسيق الفورم العمودي زي الرسمة التوضيحية */
     .step-form {
       display: flex;
       flex-direction: column;
@@ -13,7 +12,6 @@
       max-width: 400px;
       margin: 20px auto;
     }
-    .step-form input,
     .step-form select,
     .step-form button {
       width: 100%;
@@ -39,25 +37,14 @@
 
   <!-- شريط التنقل -->
   <nav>
-    <button onclick="openTab('student-tab')">تسجيل الطالب</button>
+    <button onclick="openTab('selection-tab')">اختيار المادة</button>
     <button onclick="openTab('bank-tab')">بنك الأسئلة</button>
     <button onclick="window.location.href='admin.html'">صفحة الأدمن (AI)</button>
   </nav>
 
-  <!-- 1. الصفحة الأولى: الاسم والـ ID فقط -->
-  <div id="student-tab" class="box">
-    <h2>تسجيل بيانات الطالب</h2>
-    <div class="step-form">
-      <input type="text" id="st-name" placeholder="اسم الطالب (Name)" required>
-      <input type="text" id="st-id" placeholder="الرقم الجامعي (ID)" required>
-      <button type="button" onclick="goToSelectionStep()">التالي</button>
-    </div>
-  </div>
-
-  <!-- 2. الصفحة الثانية: اختيار السنة -> التخصص -> المادة -> دخول -->
-  <div id="selection-tab" class="box" style="display:none;">
+  <!-- 1. الصفحة الأولى: اختيار السنة -> التخصص -> المادة -> دخول -->
+  <div id="selection-tab" class="box">
     <h2>اختر المسار الدراسي</h2>
-    <p id="student-greeting" style="color: #0284c7; font-weight: bold;"></p>
 
     <div class="step-form">
       <!-- أولاً: السنة -->
@@ -69,7 +56,7 @@
         <option value="السنة الرابعة">السنة الرابعة</option>
       </select>
 
-      <!-- ثانياً: التخصص (مخفي لحد ما يختار السنة) -->
+      <!-- ثانياً: التخصص -->
       <select id="st-major" onchange="onMajorChange()" style="display:none;">
         <option value="" disabled selected>-- اختر التخصص --</option>
         <option value="علوم الحاسب">علوم الحاسب</option>
@@ -78,19 +65,19 @@
         <option value="الذكاء الاصطناعي">الذكاء الاصطناعي</option>
       </select>
 
-      <!-- ثالثاً: المادة (مخفي لحد ما يختار التخصص، وبيتعبى تلقائياً من السيرفر) -->
+      <!-- ثالثاً: المادة -->
       <select id="st-subject" onchange="onSubjectChange()" style="display:none;">
         <option value="" disabled selected>-- اختر المادة --</option>
       </select>
 
-      <!-- رابعاً: زر الدخول (مخفي لحد ما يختار المادة) -->
+      <!-- رابعاً: زر الدخول -->
       <button type="button" id="enter-bank-btn" onclick="enterQuestionBank()" style="display:none;">
         دخول (Enter)
       </button>
     </div>
   </div>
 
-  <!-- 3. الصفحة الثالثة: عرض الأسئلة -->
+  <!-- 2. الصفحة الثانية: عرض الأسئلة -->
   <div id="bank-tab" class="box" style="display:none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <h2>بنك الأسئلة</h2>

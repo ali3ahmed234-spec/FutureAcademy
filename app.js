@@ -1,12 +1,10 @@
-let allQuestionsCache = []; // تخزين الأسئلة مؤقتاً لسرعة عرض المواد والأسئلة
+let allQuestionsCache = [];
 
-// 1. دالة التنقل بين الصفحات الثلاث
+// 1. دالة التنقل بين الصفحتين
 function openTab(tabId) {
-  let studentTab = document.getElementById('student-tab');
   let selectionTab = document.getElementById('selection-tab');
   let bankTab = document.getElementById('bank-tab');
 
-  if (studentTab) studentTab.style.display = 'none';
   if (selectionTab) selectionTab.style.display = 'none';
   if (bankTab) bankTab.style.display = 'none';
 
@@ -14,30 +12,7 @@ function openTab(tabId) {
   if (target) target.style.display = 'block';
 }
 
-// 2. الانتقال من صفحة الاسم والـ ID إلى صفحة اختيار السنة والتخصص
-async function goToSelectionStep() {
-  let name = document.getElementById('st-name').value.trim();
-  let id = document.getElementById('st-id').value.trim();
-
-  if (name === "" || id === "") {
-    alert("من فضلك اكتب اسمك والرقم الجامعي (ID)");
-    return;
-  }
-
-  document.getElementById('student-greeting').innerText = `مرحباً يا ${name} (ID: ${id})`;
-  openTab('selection-tab');
-
-  // تحميل الأسئلة من ملف questions.json مباشرة (يعمل على GitHub Pages والمحلي)
-  try {
-    let response = await fetch('questions.json?t=' + new Date().getTime());
-    let data = await response.json();
-    allQuestionsCache = data.questions || [];
-  } catch (error) {
-    console.error("تعذر تحميل الأسئلة:", error);
-  }
-}
-
-// 3. عند اختيار السنة -> إظهار قائمة التخصص وتصفير اللي بعدها
+// 2. عند اختيار السنة -> إظهار قائمة التخصص وتصفير اللي بعدها
 function onYearChange() {
   let majorSelect = document.getElementById('st-major');
   let subjectSelect = document.getElementById('st-subject');
@@ -50,7 +25,7 @@ function onYearChange() {
   enterBtn.style.display = "none";
 }
 
-// 4. عند اختيار التخصص -> جلب المواد المرفوعة فعلياً لهذا التخصص وهذه السنة
+// 3. عند اختيار التخصص -> جلب المواد المرفوعة فعلياً لهذا التخصص وهذه السنة
 async function onMajorChange() {
   let year = document.getElementById('st-year').value;
   let major = document.getElementById('st-major').value;
@@ -61,7 +36,6 @@ async function onMajorChange() {
   subjectSelect.style.display = "block";
   subjectSelect.innerHTML = `<option value="" disabled selected>جاري تحميل المواد...</option>`;
 
-  // قراءة أحدث نسخة من ملف questions.json مباشرة
   try {
     let response = await fetch('questions.json?t=' + new Date().getTime());
     let data = await response.json();
@@ -71,7 +45,6 @@ async function onMajorChange() {
     return;
   }
 
-  // استخراج أسماء المواد بدون تكرار للسنة والتخصص المختارين
   let availableSubjects = [];
   allQuestionsCache.forEach(q => {
     if (q.year === year && q.major === major && q.subject) {
@@ -92,7 +65,7 @@ async function onMajorChange() {
   }
 }
 
-// 5. عند اختيار المادة -> إظهار زر الدخول
+// 4. عند اختيار المادة -> إظهار زر الدخول
 function onSubjectChange() {
   let subject = document.getElementById('st-subject').value;
   let enterBtn = document.getElementById('enter-bank-btn');
@@ -102,19 +75,18 @@ function onSubjectChange() {
   }
 }
 
-// 6. عند الضغط على دخول -> فتح بنك الأسئلة وعرض أسئلة المادة المختارة فقط
+// 5. عند الضغط على دخول -> فتح بنك الأسئلة وعرض أسئلة المادة المختارة فقط
 function enterQuestionBank() {
-  let name = document.getElementById('st-name').value.trim();
   let year = document.getElementById('st-year').value;
   let major = document.getElementById('st-major').value;
   let subject = document.getElementById('st-subject').value;
 
-  document.getElementById('welcome-msg').innerText = `أهلاً يا ${name} | ${year} - ${major} | مادة: ${subject}`;
+  document.getElementById('welcome-msg').innerText = `${year} - ${major} | مادة: ${subject}`;
   showQuestions(year, major, subject);
   openTab('bank-tab');
 }
 
-// 7. عرض الأسئلة المفلترة حسب السنة والتخصص والمادة (بالنظام التفاعلي)
+// 6. عرض الأسئلة المفلترة حسب السنة والتخصص والمادة
 function showQuestions(year, major, subject) {
   let container = document.getElementById('questions-container');
   container.innerHTML = "";
@@ -165,7 +137,7 @@ function showQuestions(year, major, subject) {
   }
 }
 
-// 8. تصحيح الإجابة عند ضغط الطالب على أحد الاختيارات
+// 7. تصحيح الإجابة عند ضغط الطالب على أحد الاختيارات
 function checkAnswer(questionId, selectedLetter, correctLetter) {
   let optionsDiv = document.getElementById(`options-${questionId}`);
   let feedbackDiv = document.getElementById(`feedback-${questionId}`);
